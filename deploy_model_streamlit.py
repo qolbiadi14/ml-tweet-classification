@@ -71,11 +71,11 @@ def load_logistic_model():
     return joblib.load('best_model.pkl')
 
 # Streamlit UI
-st.title('Text Classification App')
+st.title('Aplikasi Klasifikasi Tweet')
 
-input_text = st.text_area('Enter the text to classify')
+input_text = st.text_area('Masukkan tweet untuk diklasifikasikan')
 
-if st.button('Classify'):
+if st.button('Proses'):
     if input_text:
         preprocessed_text = preprocess(input_text)
 
