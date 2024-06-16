@@ -73,18 +73,11 @@ def load_logistic_model():
 # Streamlit UI
 st.title('Aplikasi Klasifikasi Tweet')
 
-# Initialize session state
-if 'input_text' not in st.session_state:
-    st.session_state.input_text = ''
-
-# Text area input
-input_text = st.text_area('Masukkan tweet untuk diklasifikasikan', value=st.session_state.input_text)
+input_text = st.text_area('Masukkan tweet untuk diklasifikasikan')
 
 if st.button('Proses'):
-    # Update session state
-    st.session_state.input_text = input_text
-    if st.session_state.input_text:
-        preprocessed_text = preprocess(st.session_state.input_text)
+    if input_text:
+        preprocessed_text = preprocess(input_text)
 
         lstm_model = load_lstm_model()
         tokenizer = load_tokenizer()
@@ -118,6 +111,7 @@ if st.button('Proses'):
         else:
             lr_result += "mengandung hate speech dan abusive."
         
+        st.write("Tweet yang diinputkan: ", input_text)
         st.write("Prediksi Model LSTM: ", lstm_result)
         st.write("Prediksi Model Logistic Regression: ", lr_result)
     else:
