@@ -73,11 +73,15 @@ def load_logistic_model():
 # Streamlit UI
 st.title('Aplikasi Klasifikasi Tweet')
 
-input_text = st.text_area('Masukkan tweet untuk diklasifikasikan')
+if 'input_text' not in st.session_state:
+    st.session_state.input_text = ''
+
+input_text = st.text_area('Masukkan tweet untuk diklasifikasikan', st.session_state.input_text)
 
 if st.button('Proses'):
-    if input_text:
-        preprocessed_text = preprocess(input_text)
+    st.session_state.input_text = input_text
+    if st.session_state.input_text:
+        preprocessed_text = preprocess(st.session_state.input_text)
 
         lstm_model = load_lstm_model()
         tokenizer = load_tokenizer()
