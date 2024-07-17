@@ -2,69 +2,14 @@ import streamlit as st
 import re
 import pandas as pd
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.models import load_model
-from tensorflow.keras.metrics import Precision, Recall
+from tensorflow.keras.metrics import accuracy, Precision, Recall
 import joblib
 import tensorflow as tf
 
-# Load necessary files
-alay_dict = pd.read_csv('new_kamusalay.csv', names=['original', 'replacement'], encoding='latin-1')
-stopword_dict = pd.read_csv('stopwordbahasa.csv', names=['stopword'], encoding='latin-1')
-
-alay_dict_map = dict(zip(alay_dict['original'], alay_dict['replacement']))
-
-# Preprocessing functions
-def lowercase(text):
-    return text.lower()
-
-def remove_unnecessary_char(text):
-    text = re.sub(r'\\+n', ' ', text)
-    text = re.sub(r'\n', " ", text)
-    text = re.sub(r'rt', ' ', text)
-    text = re.sub(r'RT', ' ', text)
-    text = re.sub(r'user', ' ', text)
-    text = re.sub(r'USER', ' ', text)
-    text = re.sub(r'((www\.[^\s]+)|(https?://[^\s]+)|(http?://[^\s]+))', ' ', text)
-    text = re.sub(r':', ' ', text)
-    text = re.sub(r';', ' ', text)
-    text = re.sub(r'\\+n', ' ', text)
-    text = re.sub(r'\n', " ", text)
-    text = re.sub(r'\\+', ' ', text)
-    text = re.sub(r'  +', ' ', text)
-    return text
-
-def remove_nonaplhanumeric(text):
-    text = re.sub(r'[^0-9a-zA-Z]+', ' ', text)
-    return text
-
-def normalize_alay(text):
-    return ' '.join([alay_dict_map[word] if word in alay_dict_map else word for word in text.split(' ')])
-
-def remove_stopword(text):
-    text = ' '.join(['' if word in stopword_dict.stopword.values else word for word in text.split(' ')])
-    text = re.sub(r'  +', ' ', text)
-    text = text.strip()
-    return text
-
-def preprocess(text):
-    text = lowercase(text)
-    text = remove_nonaplhanumeric(text)
-    text = remove_unnecessary_char(text)
-    text = normalize_alay(text)
-    text = remove_stopword(text)
-    return text
-
 @st.cache_resource(ttl=600)
 def load_lstm_model():
-    return load_model('model.h5', custom_objects={'Precision': Precision, 'Recall': Recall})
-
-@st.cache_resource(ttl=600)
-def load_tokenizer():
-    X_train = pd.read_pickle('X_train.pkl')
-    tokenizer = Tokenizer(num_words=5000)
-    tokenizer.fit_on_texts(X_train)
-    return tokenizer
+    return load_model('model.h5', custom_objects={'accuracy':accuracy,'Precision': Precision, 'Recall': Recall})
 
 @st.cache_resource(ttl=600)
 def load_logistic_model():
